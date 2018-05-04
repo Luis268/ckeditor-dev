@@ -1121,6 +1121,11 @@
 			editable.removeListener( 'blur', onEditableBlur );
 			this.editor.focusManager.remove( editable );
 
+			// Destroy also editable filter to prevent memory leak (#1722).
+			if ( editable.filter ) {
+				editable.filter.destroy();
+			}
+
 			if ( !offline ) {
 				this.repository.destroyAll( false, editable );
 				editable.removeClass( 'cke_widget_editable' );
@@ -2211,7 +2216,7 @@
 		var filter = editables[ editableName ];
 
 		if ( !filter ) {
-			filter = editableDefinition.allowedContent ? new CKEDITOR.filter( editableDefinition.allowedContent, this.editor ) : this.editor.filter.clone();
+			filter = editableDefinition.allowedContent ? new CKEDITOR.filter( editableDefinition.allowedContent ) : this.editor.filter.clone();
 
 			editables[ editableName ] = filter;
 
